@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,7 +19,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'satoshi': ['Inter', 'system-ui', 'sans-serif'],
+				'satoshi': ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
+				'sans': ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
 			},
 			colors: {
 				// Sistema Conffec - Cores oficiais
