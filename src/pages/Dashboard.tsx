@@ -75,7 +75,7 @@ const Dashboard = () => {
         
         <MetricCard
           title="Custo por Peça"
-          value="€ 12,45"
+          value="R$ 12,45"
           change={{ value: "2,1%", trend: "down" }}
           subtitle="custo médio"
           icon={DollarSign}

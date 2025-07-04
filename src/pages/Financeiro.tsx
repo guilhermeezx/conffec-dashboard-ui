@@ -66,7 +66,7 @@ const transacoes = [
     id: 1,
     descricao: "Venda Loja A",
     tipo: "Receita",
-    valor: "€ 2.450,00",
+    valor: "R$ 2.450,00",
     vencimento: "15/11/2024",
     status: "Pago",
     metodo: "Transferência"
@@ -75,7 +75,7 @@ const transacoes = [
     id: 2,
     descricao: "Aluguel Fábrica",
     tipo: "Despesa",
-    valor: "€ 3.200,00",
+    valor: "R$ 3.200,00",
     vencimento: "10/11/2024",
     status: "Pago",
     metodo: "Débito Automático"
@@ -84,7 +84,7 @@ const transacoes = [
     id: 3,
     descricao: "Matéria Prima",
     tipo: "Despesa",
-    valor: "€ 1.850,00",
+    valor: "R$ 1.850,00",
     vencimento: "20/11/2024",
     status: "Aberto",
     metodo: "Boleto"
@@ -93,7 +93,7 @@ const transacoes = [
     id: 4,
     descricao: "Venda Loja B",
     tipo: "Receita",
-    valor: "€ 1.650,00",
+    valor: "R$ 1.650,00",
     vencimento: "12/11/2024",
     status: "Atrasado",
     metodo: "Pix"
@@ -218,7 +218,7 @@ const Financeiro = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <MetricCard
           title="Receita Total"
-          value="€ 58.000,00"
+          value="R$ 58.000,00"
           change={{ value: "12,3%", trend: "up" }}
           subtitle="este mês"
           icon={TrendingUp}
@@ -226,7 +226,7 @@ const Financeiro = () => {
         
         <MetricCard
           title="Despesas Totais"
-          value="€ 36.000,00"
+          value="R$ 36.000,00"
           change={{ value: "5,7%", trend: "up" }}
           subtitle="este mês"
           icon={TrendingDown}
@@ -234,7 +234,7 @@ const Financeiro = () => {
         
         <MetricCard
           title="Saldo Atual"
-          value="€ 22.000,00"
+          value="R$ 22.000,00"
           change={{ value: "18,5%", trend: "up" }}
           subtitle="lucro líquido"
           icon={Wallet}

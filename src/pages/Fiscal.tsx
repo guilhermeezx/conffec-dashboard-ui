@@ -46,7 +46,7 @@ const notasFiscais = [
   {
     numero: "000.001.234",
     cliente: "Confecções Silva Ltda",
-    valor: "€ 2.450,00",
+    valor: "R$ 2.450,00",
     emissao: "15/11/2024",
     status: "Emitida",
     chave: "35241115123456000123550010000012341123456789"
@@ -54,7 +54,7 @@ const notasFiscais = [
   {
     numero: "000.001.235",
     cliente: "Moda & Estilo",
-    valor: "€ 1.850,00",
+    valor: "R$ 1.850,00",
     emissao: "14/11/2024",
     status: "Pendente",
     chave: "35241114123456000123550010000012351123456789"
@@ -62,7 +62,7 @@ const notasFiscais = [
   {
     numero: "000.001.236",
     cliente: "Fashion Store",
-    valor: "€ 3.200,00",
+    valor: "R$ 3.200,00",
     emissao: "13/11/2024",
     status: "Erro",
     chave: "35241113123456000123550010000012361123456789"
@@ -70,7 +70,7 @@ const notasFiscais = [
   {
     numero: "000.001.237",
     cliente: "Boutique Elegante",
-    valor: "€ 1.650,00",
+    valor: "R$ 1.650,00",
     emissao: "12/11/2024",
     status: "Emitida",
     chave: "35241112123456000123550010000012371123456789"
@@ -183,7 +183,7 @@ const Fiscal = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <MetricCard
           title="Total Emitido no Mês"
-          value="€ 28.450,00"
+          value="R$ 28.450,00"
           change={{ value: "12,3%", trend: "up" }}
           subtitle="em NF-e"
           icon={DollarSign}

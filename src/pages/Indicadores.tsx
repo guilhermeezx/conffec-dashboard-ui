@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MetricCard } from "@/components/ui/metric-card";
@@ -123,7 +122,7 @@ const Indicadores = () => {
         
         <MetricCard
           title="Ticket Médio"
-          value="€ 145,50"
+          value="R$ 145,50"
           change={{ value: "6,8%", trend: "down" }}
           subtitle="por ordem"
           icon={TrendingDown}
@@ -304,7 +303,7 @@ const Indicadores = () => {
                     borderRadius: '8px',
                     boxShadow: '0px 2px 6px rgba(0,0,0,0.06)'
                   }}
-                  formatter={(value) => [`€ ${value}`, 'Valor']}
+                  formatter={(value) => [`R$ ${value}`, 'Valor']}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -323,7 +322,7 @@ const Indicadores = () => {
                 <div className="w-full bg-muted rounded-full h-2">
                   <div className="bg-success h-2 rounded-full" style={{ width: '100%' }}></div>
                 </div>
-                <p className="text-xs text-success mt-1">Meta: € 60.000 | Real: € 65.000</p>
+                <p className="text-xs text-success mt-1">Meta: R$ 60.000 | Real: R$ 65.000</p>
               </div>
               
               <div>
@@ -355,15 +354,15 @@ const Indicadores = () => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Receita Total:</span>
-                <span className="font-medium">€ 65.000</span>
+                <span className="font-medium">R$ 65.000</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Despesas:</span>
-                <span className="font-medium">€ 49.000</span>
+                <span className="font-medium">R$ 49.000</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Lucro Líquido:</span>
-                <span className="font-medium text-success">€ 16.000</span>
+                <span className="font-medium text-success">R$ 16.000</span>
               </div>
               <div className="flex justify-between border-t border-border pt-2 mt-2">
                 <span className="text-muted-foreground">Crescimento:</span>
@@ -386,7 +385,7 @@ const Indicadores = () => {
               ></div>
               <div>
                 <p className="text-sm font-medium">{item.categoria}</p>
-                <p className="text-xs text-muted-foreground">€ {item.valor.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">R$ {item.valor.toLocaleString()}</p>
               </div>
             </div>
           ))}

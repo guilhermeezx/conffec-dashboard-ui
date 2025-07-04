@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,7 +43,7 @@ const CustoMinuto = () => {
 
   // Cálculo do custo minuto
   const custoMinuto = ((parseFloat(folhaMensal) + parseFloat(overhead)) / parseFloat(minutosProductivos)).toFixed(4);
-  const custoMinutoFormatado = `€ ${custoMinuto}`;
+  const custoMinutoFormatado = `R$ ${custoMinuto}`;
 
   return (
     <TooltipProvider>
@@ -166,7 +165,7 @@ const CustoMinuto = () => {
               <div className="mt-6 p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground mb-2">Cálculo:</p>
                 <p className="text-sm font-mono">
-                  (€{folhaMensal} + €{overhead}) ÷ {minutosProductivos} = {custoMinutoFormatado}
+                  (R${folhaMensal} + R${overhead}) ÷ {minutosProductivos} = {custoMinutoFormatado}
                 </p>
               </div>
             </div>
@@ -174,7 +173,7 @@ const CustoMinuto = () => {
             {/* Meta e Comparação */}
             <MetricCard
               title="Meta do Custo Minuto"
-              value="€ 0,90"
+              value="R$ 0,90"
               change={{ value: "5,6%", trend: "up" }}
               subtitle="objetivo mensal"
               icon={TrendingUp}
