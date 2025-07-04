@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,55 +19,85 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'satoshi': ['Inter', 'system-ui', 'sans-serif'],
+			},
 			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
+				// Sistema Conffec - Cores oficiais
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#00D084', // Verde claro
+					foreground: '#FFFFFF',
+					dark: '#00664F', // Verde petróleo
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#3B82F6', // Azul para botões secundários
+					foreground: '#FFFFFF'
 				},
-				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
-				},
+				success: '#00D084',
+				warning: '#F59E0B',
+				error: '#EF4444',
+				
+				// Sistema de cores base
+				background: '#FFFFFF',
+				foreground: '#1F2937',
 				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
+					DEFAULT: '#F5F7FA',
+					foreground: '#6B7280'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: '#E0FDF2', // Verde pálido para seleção
+					foreground: '#00664F'
+				},
+				border: '#E5E7EB',
+				input: '#E5E7EB',
+				ring: '#00D084',
+				
+				// Cores específicas do sistema
+				conffec: {
+					green: '#00D084',
+					'green-dark': '#00664F',
+					'green-light': '#E0FDF2',
+					blue: '#3B82F6',
+					gray: {
+						50: '#F5F7FA',
+						100: '#E5E7EB',
+						600: '#6B7280',
+						900: '#1F2937'
+					}
+				},
+				
+				// Mantendo compatibilidade com shadcn
+				card: {
+					DEFAULT: '#FFFFFF',
+					foreground: '#1F2937'
 				},
 				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
+					DEFAULT: '#FFFFFF',
+					foreground: '#1F2937'
 				},
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
+				destructive: {
+					DEFAULT: '#EF4444',
+					foreground: '#FFFFFF'
 				},
 				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+					DEFAULT: '#FFFFFF',
+					foreground: '#1F2937',
+					primary: '#00D084',
+					'primary-foreground': '#FFFFFF',
+					accent: '#E0FDF2',
+					'accent-foreground': '#00664F',
+					border: '#E5E7EB',
+					ring: '#00D084'
 				}
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				lg: '12px', // Seguindo o padrão da referência
+				md: '8px',
+				sm: '6px'
+			},
+			boxShadow: {
+				'conffec': '0px 2px 6px rgba(0,0,0,0.06)', // Sombra suave conforme especificação
+				'conffec-lg': '0px 4px 12px rgba(0,0,0,0.08)',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -84,11 +115,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out'
 			}
 		}
 	},
