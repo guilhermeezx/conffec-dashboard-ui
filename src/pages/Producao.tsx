@@ -15,11 +15,11 @@ import {
   Plus, 
   Search, 
   Filter, 
-  Play, 
-  Pause, 
-  CheckCircle, 
-  Clock,
-  User
+  Eye, 
+  MoreHorizontal,
+  PlayCircle,
+  PauseCircle,
+  CheckCircle2
 } from "lucide-react";
 import {
   Select,
@@ -28,63 +28,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Link } from "react-router-dom";
 
-// Dados simulados das ordens de produção
 const ordensProducao = [
   {
     id: "OP-001",
-    tipo: "Camiseta Básica",
-    operador: "João Silva",
-    inicio: "08:00",
-    fim: "10:30",
-    tempo: "2h30min",
-    eficiencia: 92,
+    produto: "Camiseta Básica Branca",
+    grupo: "Costura A",
+    qtdProduzida: 245,
+    qtdReprovada: 12,
     status: "Finalizada",
-    pecas: 15
+    dataInicio: "15/11/2024",
+    prazo: "20/11/2024"
   },
   {
     id: "OP-002",
-    tipo: "Calça Jeans",
-    operador: "Maria Santos",
-    inicio: "09:15",
-    fim: "-",
-    tempo: "3h12min",
-    eficiencia: 87,
-    status: "Em Produção",
-    pecas: 8
+    produto: "Calça Jeans Masculina",
+    grupo: "Costura B",
+    qtdProduzida: 89,
+    qtdReprovada: 3,
+    status: "Em andamento",
+    dataInicio: "18/11/2024",
+    prazo: "25/11/2024"
   },
   {
     id: "OP-003",
-    tipo: "Blusa Social",
-    operador: "Carlos Lima",
-    inicio: "07:30",
-    fim: "-",
-    tempo: "-",
-    eficiencia: 0,
-    status: "Pausada",
-    pecas: 0
+    produto: "Blusa Social Feminina",
+    grupo: "Corte Principal",
+    qtdProduzida: 156,
+    qtdReprovada: 8,
+    status: "Aguardando inspeção",
+    dataInicio: "16/11/2024",
+    prazo: "22/11/2024"
   },
   {
     id: "OP-004",
-    tipo: "Vestido Casual",
-    operador: "Ana Costa",
-    inicio: "10:00",
-    fim: "14:20",
-    tempo: "4h20min",
-    eficiencia: 95,
-    status: "Finalizada",
-    pecas: 12
+    produto: "Vestido Casual",
+    grupo: "Acabamento A",
+    qtdProduzida: 67,
+    qtdReprovada: 2,
+    status: "Em andamento",
+    dataInicio: "20/11/2024",
+    prazo: "28/11/2024"
   },
 ];
 
 const getStatusBadge = (status: string) => {
   switch (status) {
     case "Finalizada":
-      return <Badge className="bg-success/10 text-success border-success/20">Finalizada</Badge>;
-    case "Em Produção":
-      return <Badge className="bg-primary/10 text-primary border-primary/20">Em Produção</Badge>;
-    case "Pausada":
-      return <Badge className="bg-warning/10 text-warning border-warning/20">Pausada</Badge>;
+      return <Badge className="bg-success/10 text-success border-success/20">
+        <CheckCircle2 className="w-3 h-3 mr-1" />
+        Finalizada
+      </Badge>;
+    case "Em andamento":
+      return <Badge className="bg-primary/10 text-primary border-primary/20">
+        <PlayCircle className="w-3 h-3 mr-1" />
+        Em andamento
+      </Badge>;
+    case "Aguardando inspeção":
+      return <Badge className="bg-warning/10 text-warning border-warning/20">
+        <PauseCircle className="w-3 h-3 mr-1" />
+        Aguardando inspeção
+      </Badge>;
     default:
       return <Badge variant="outline">{status}</Badge>;
   }
@@ -102,8 +107,8 @@ const Producao = () => {
       {/* Cabeçalho */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Produção</h1>
-          <p className="text-muted-foreground">Gerencie ordens e acompanhe o progresso</p>
+          <h1 className="text-3xl font-bold text-foreground">Ordens de Produção</h1>
+          <p className="text-muted-foreground">Gerencie ordens por grupos e acompanhe o progresso</p>
         </div>
         
         <Button className="conffec-button-primary gap-2">
@@ -116,23 +121,23 @@ const Producao = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="conffec-card p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-primary" />
+            <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-success" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Finalizadas Hoje</p>
-              <p className="text-xl font-bold">12</p>
+              <p className="text-sm text-muted-foreground">Finalizadas</p>
+              <p className="text-xl font-bold">8</p>
             </div>
           </div>
         </div>
 
         <div className="conffec-card p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-warning/10 rounded-lg flex items-center justify-center">
-              <Play className="w-5 h-5 text-warning" />
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <PlayCircle className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Em Produção</p>
+              <p className="text-sm text-muted-foreground">Em Andamento</p>
               <p className="text-xl font-bold">5</p>
             </div>
           </div>
@@ -140,24 +145,24 @@ const Producao = () => {
 
         <div className="conffec-card p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-error/10 rounded-lg flex items-center justify-center">
-              <Pause className="w-5 h-5 text-error" />
+            <div className="w-10 h-10 bg-warning/10 rounded-lg flex items-center justify-center">
+              <PauseCircle className="w-5 h-5 text-warning" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Pausadas</p>
-              <p className="text-xl font-bold">2</p>
+              <p className="text-sm text-muted-foreground">Aguardando Inspeção</p>
+              <p className="text-xl font-bold">3</p>
             </div>
           </div>
         </div>
 
         <div className="conffec-card p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
-              <User className="w-5 h-5 text-success" />
+            <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-secondary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Operadores Ativos</p>
-              <p className="text-xl font-bold">8</p>
+              <p className="text-sm text-muted-foreground">Peças Produzidas</p>
+              <p className="text-xl font-bold">1.247</p>
             </div>
           </div>
         </div>
@@ -170,20 +175,20 @@ const Producao = () => {
             <div className="relative max-w-sm">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Buscar ordem ou operador..."
+                placeholder="Buscar ordem ou produto..."
                 className="pl-9 conffec-input"
               />
             </div>
 
             <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os Status</SelectItem>
-                <SelectItem value="Em Produção">Em Produção</SelectItem>
+                <SelectItem value="Em andamento">Em Andamento</SelectItem>
                 <SelectItem value="Finalizada">Finalizada</SelectItem>
-                <SelectItem value="Pausada">Pausada</SelectItem>
+                <SelectItem value="Aguardando inspeção">Aguardando Inspeção</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -200,15 +205,13 @@ const Producao = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nº Ordem</TableHead>
-              <TableHead>Tipo de Peça</TableHead>
-              <TableHead>Operador</TableHead>
-              <TableHead>Início</TableHead>
-              <TableHead>Fim</TableHead>
-              <TableHead>Tempo</TableHead>
-              <TableHead>Peças</TableHead>
-              <TableHead>Eficiência</TableHead>
+              <TableHead>Nº OP</TableHead>
+              <TableHead>Produto</TableHead>
+              <TableHead>Grupo Responsável</TableHead>
+              <TableHead>Qtd. Produzida</TableHead>
+              <TableHead>Qtd. Reprovada</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Prazo</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -216,36 +219,28 @@ const Producao = () => {
             {ordensFiltradas.map((ordem) => (
               <TableRow key={ordem.id}>
                 <TableCell className="font-medium">{ordem.id}</TableCell>
-                <TableCell>{ordem.tipo}</TableCell>
-                <TableCell>{ordem.operador}</TableCell>
-                <TableCell>{ordem.inicio}</TableCell>
-                <TableCell>{ordem.fim}</TableCell>
-                <TableCell>{ordem.tempo}</TableCell>
-                <TableCell>{ordem.pecas}</TableCell>
+                <TableCell>{ordem.produto}</TableCell>
                 <TableCell>
-                  {ordem.eficiencia > 0 && (
-                    <span className={`font-medium ${
-                      ordem.eficiencia >= 90 ? 'text-success' : 
-                      ordem.eficiencia >= 80 ? 'text-warning' : 'text-error'
-                    }`}>
-                      {ordem.eficiencia}%
-                    </span>
-                  )}
+                  <Badge variant="outline">{ordem.grupo}</Badge>
+                </TableCell>
+                <TableCell>
+                  <span className="font-medium text-success">{ordem.qtdProduzida}</span>
+                </TableCell>
+                <TableCell>
+                  <span className={`font-medium ${ordem.qtdReprovada > 0 ? 'text-error' : 'text-muted-foreground'}`}>
+                    {ordem.qtdReprovada}
+                  </span>
                 </TableCell>
                 <TableCell>{getStatusBadge(ordem.status)}</TableCell>
+                <TableCell>{ordem.prazo}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  {ordem.status === "Em Produção" && (
-                    <Button size="sm" variant="outline">
-                      <Pause className="w-4 h-4" />
-                    </Button>
-                  )}
-                  {ordem.status === "Pausada" && (
-                    <Button size="sm" className="conffec-button-primary">
-                      <Play className="w-4 h-4" />
-                    </Button>
-                  )}
+                  <Button size="sm" variant="outline" asChild>
+                    <Link to={`/producao/${ordem.id}`}>
+                      <Eye className="w-4 h-4" />
+                    </Link>
+                  </Button>
                   <Button size="sm" variant="outline">
-                    <Clock className="w-4 h-4" />
+                    <MoreHorizontal className="w-4 h-4" />
                   </Button>
                 </TableCell>
               </TableRow>

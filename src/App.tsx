@@ -8,6 +8,11 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppLayout from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Producao from "./pages/Producao";
+import ProducaoDetalhes from "./pages/ProducaoDetalhes";
+import Grupos from "./pages/Grupos";
+import Metas from "./pages/Metas";
+import Colaboradores from "./pages/Colaboradores";
+import ColaboradorPerfil from "./pages/ColaboradorPerfil";
 import CustoMinuto from "./pages/CustoMinuto";
 import Fiscal from "./pages/Fiscal";
 import Documentos from "./pages/Documentos";
@@ -30,6 +35,11 @@ const App = () => (
               <Route path="/" element={<AppLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="producao" element={<Producao />} />
+                <Route path="producao/:id" element={<ProducaoDetalhes />} />
+                <Route path="grupos" element={<Grupos />} />
+                <Route path="metas" element={<Metas />} />
+                <Route path="colaboradores" element={<Colaboradores />} />
+                <Route path="colaboradores/:id" element={<ColaboradorPerfil />} />
                 <Route path="custo-minuto" element={<CustoMinuto />} />
                 <Route path="fiscal" element={<Fiscal />} />
                 <Route path="documentos" element={<Documentos />} />
