@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,7 +65,7 @@ const Confetti = () => {
         </div>
       </div>
       
-      {/* Animação de confetes simples com CSS */}
+      {/* Animação de confetes usando as classes CSS já definidas */}
       <div className="confetti-container">
         {[...Array(50)].map((_, i) => (
           <div
@@ -80,36 +79,6 @@ const Confetti = () => {
           />
         ))}
       </div>
-      
-      <style jsx>{`
-        .confetti-container {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-        }
-        
-        .confetti-piece {
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          top: -10px;
-          animation: confetti-fall 3s linear infinite;
-        }
-        
-        @keyframes confetti-fall {
-          0% {
-            transform: translateY(-100vh) rotate(0deg);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(100vh) rotate(720deg);
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 };
