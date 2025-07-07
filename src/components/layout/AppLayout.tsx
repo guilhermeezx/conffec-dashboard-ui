@@ -2,7 +2,7 @@
 import { Outlet } from "react-router-dom";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { AppHeader } from "./AppHeader";
+import AppHeader from "./AppHeader";
 
 const AppLayout = () => {
   return (
