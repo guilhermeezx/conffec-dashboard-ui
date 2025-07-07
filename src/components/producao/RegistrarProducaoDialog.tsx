@@ -52,9 +52,8 @@ export default function RegistrarProducaoDialog({ opId }: RegistrarProducaoDialo
         grupo_id: formData.grupo_id,
         responsavel_id: user.id,
         qtde_produzida: parseInt(formData.qtde_produzida),
-        qtde_reprovada: formData.qtde_reprovada ? parseInt(formData.qtde_reprovada) : 0,
-        observacoes: formData.observacoes || null,
-        status_inspecao: 'pendente'
+        qtde_reprovada: formData.qtde_reprovada ? parseInt(formData.qtde_reprovada) : undefined,
+        observacoes: formData.observacoes || undefined
       });
 
       setFormData({

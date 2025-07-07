@@ -14,7 +14,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -48,11 +47,10 @@ export default function CriarOrdemDialog() {
       await createOrdem.mutateAsync({
         numero_op: formData.numero_op,
         produto: formData.produto,
-        tipo_peca: formData.tipo_peca || null,
-        grupo_id: formData.grupo_id || null,
-        meta_producao: formData.meta_producao ? parseInt(formData.meta_producao) : 0,
-        prazo_entrega: formData.prazo_entrega || null,
-        status: 'em_andamento'
+        tipo_peca: formData.tipo_peca || undefined,
+        grupo_id: formData.grupo_id || undefined,
+        meta_producao: formData.meta_producao ? parseInt(formData.meta_producao) : undefined,
+        prazo_entrega: formData.prazo_entrega || undefined
       });
 
       setFormData({
