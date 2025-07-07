@@ -78,7 +78,7 @@ export const useRegistrosProducao = (opId?: string, grupoId?: string, status?: s
         throw error;
       }
 
-      return data as RegistroProducao[];
+      return data as any[] as RegistroProducao[];
     }
   });
 };
@@ -88,7 +88,14 @@ export const useCreateRegistroProducao = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (registroData: Partial<RegistroProducao>) => {
+    mutationFn: async (registroData: {
+      op_id: string;
+      grupo_id: string;
+      responsavel_id: string;
+      qtde_produzida: number;
+      qtde_reprovada?: number;
+      observacoes?: string;
+    }) => {
       const { data, error } = await supabase
         .from('registros_producao')
         .insert([registroData])

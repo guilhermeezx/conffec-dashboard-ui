@@ -84,7 +84,14 @@ export const useCreateOrdem = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (ordemData: Partial<OrdemProducao>) => {
+    mutationFn: async (ordemData: {
+      numero_op: string;
+      produto: string;
+      tipo_peca?: string;
+      grupo_id?: string;
+      meta_producao?: number;
+      prazo_entrega?: string;
+    }) => {
       const { data, error } = await supabase
         .from('ordens_producao')
         .insert([ordemData])
@@ -117,7 +124,18 @@ export const useUpdateOrdem = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<OrdemProducao> & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: { 
+      id: string; 
+      numero_op?: string;
+      produto?: string;
+      tipo_peca?: string;
+      grupo_id?: string;
+      qtde_total_produzida?: number;
+      qtde_total_reprovada?: number;
+      status?: string;
+      prazo_entrega?: string;
+      meta_producao?: number;
+    }) => {
       const { data, error } = await supabase
         .from('ordens_producao')
         .update(updates)
