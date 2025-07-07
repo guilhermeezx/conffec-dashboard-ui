@@ -160,7 +160,9 @@ export type Database = {
           created_at: string
           grupo_id: string | null
           id: string
+          meta_producao: number | null
           numero_op: string
+          prazo_entrega: string | null
           produto: string
           qtde_total_produzida: number | null
           qtde_total_reprovada: number | null
@@ -172,7 +174,9 @@ export type Database = {
           created_at?: string
           grupo_id?: string | null
           id?: string
+          meta_producao?: number | null
           numero_op: string
+          prazo_entrega?: string | null
           produto: string
           qtde_total_produzida?: number | null
           qtde_total_reprovada?: number | null
@@ -184,7 +188,9 @@ export type Database = {
           created_at?: string
           grupo_id?: string | null
           id?: string
+          meta_producao?: number | null
           numero_op?: string
+          prazo_entrega?: string | null
           produto?: string
           qtde_total_produzida?: number | null
           qtde_total_reprovada?: number | null

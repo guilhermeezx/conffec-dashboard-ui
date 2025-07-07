@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Plus, 
   Search, 
   Filter, 
   Eye, 
@@ -29,63 +28,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
-
-const ordensProducao = [
-  {
-    id: "OP-001",
-    produto: "Camiseta Básica Branca",
-    grupo: "Costura A",
-    qtdProduzida: 245,
-    qtdReprovada: 12,
-    status: "Finalizada",
-    dataInicio: "15/11/2024",
-    prazo: "20/11/2024"
-  },
-  {
-    id: "OP-002",
-    produto: "Calça Jeans Masculina",
-    grupo: "Costura B",
-    qtdProduzida: 89,
-    qtdReprovada: 3,
-    status: "Em andamento",
-    dataInicio: "18/11/2024",
-    prazo: "25/11/2024"
-  },
-  {
-    id: "OP-003",
-    produto: "Blusa Social Feminina",
-    grupo: "Corte Principal",
-    qtdProduzida: 156,
-    qtdReprovada: 8,
-    status: "Aguardando inspeção",
-    dataInicio: "16/11/2024",
-    prazo: "22/11/2024"
-  },
-  {
-    id: "OP-004",
-    produto: "Vestido Casual",
-    grupo: "Acabamento A",
-    qtdProduzida: 67,
-    qtdReprovada: 2,
-    status: "Em andamento",
-    dataInicio: "20/11/2024",
-    prazo: "28/11/2024"
-  },
-];
+import { useAuth } from "@/hooks/useAuth";
+import { useOrdens } from "@/hooks/useOrdens";
+import CriarOrdemDialog from "@/components/producao/CriarOrdemDialog";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const getStatusBadge = (status: string) => {
   switch (status) {
-    case "Finalizada":
+    case "finalizada":
       return <Badge className="bg-success/10 text-success border-success/20">
         <CheckCircle2 className="w-3 h-3 mr-1" />
         Finalizada
       </Badge>;
-    case "Em andamento":
+    case "em_andamento":
       return <Badge className="bg-primary/10 text-primary border-primary/20">
         <PlayCircle className="w-3 h-3 mr-1" />
         Em andamento
       </Badge>;
-    case "Aguardando inspeção":
+    case "aguardando_inspecao":
       return <Badge className="bg-warning/10 text-warning border-warning/20">
         <PauseCircle className="w-3 h-3 mr-1" />
         Aguardando inspeção
@@ -96,11 +57,38 @@ const getStatusBadge = (status: string) => {
 };
 
 const Producao = () => {
+  const { canManageGroups } = useAuth();
+  const { data: ordens, isLoading } = useOrdens();
   const [filtroStatus, setFiltroStatus] = useState("all");
+  const [busca, setBusca] = useState("");
 
-  const ordensFiltradas = ordensProducao.filter(ordem => 
-    filtroStatus === "all" || ordem.status === filtroStatus
-  );
+  const ordensFiltradas = ordens?.filter(ordem => {
+    const matchStatus = filtroStatus === "all" || ordem.status === filtroStatus;
+    const matchBusca = !busca || 
+      ordem.numero_op.toLowerCase().includes(busca.toLowerCase()) ||
+      ordem.produto.toLowerCase().includes(busca.toLowerCase());
+    
+    return matchStatus && matchBusca;
+  }) || [];
+
+  // Calculate statistics
+  const stats = {
+    finalizadas: ordens?.filter(o => o.status === 'finalizada').length || 0,
+    emAndamento: ordens?.filter(o => o.status === 'em_andamento').length || 0,
+    aguardandoInspecao: ordens?.filter(o => o.status === 'aguardando_inspecao').length || 0,
+    totalPecas: ordens?.reduce((acc, o) => acc + (o.qtde_total_produzida || 0), 0) || 0
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando ordens de produção...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -111,10 +99,7 @@ const Producao = () => {
           <p className="text-muted-foreground">Gerencie ordens por grupos e acompanhe o progresso</p>
         </div>
         
-        <Button className="conffec-button-primary gap-2">
-          <Plus className="w-4 h-4" />
-          Nova Ordem
-        </Button>
+        {canManageGroups() && <CriarOrdemDialog />}
       </div>
 
       {/* Estatísticas rápidas */}
@@ -126,7 +111,7 @@ const Producao = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Finalizadas</p>
-              <p className="text-xl font-bold">8</p>
+              <p className="text-xl font-bold">{stats.finalizadas}</p>
             </div>
           </div>
         </div>
@@ -138,7 +123,7 @@ const Producao = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Em Andamento</p>
-              <p className="text-xl font-bold">5</p>
+              <p className="text-xl font-bold">{stats.emAndamento}</p>
             </div>
           </div>
         </div>
@@ -150,7 +135,7 @@ const Producao = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Aguardando Inspeção</p>
-              <p className="text-xl font-bold">3</p>
+              <p className="text-xl font-bold">{stats.aguardandoInspecao}</p>
             </div>
           </div>
         </div>
@@ -162,7 +147,7 @@ const Producao = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Peças Produzidas</p>
-              <p className="text-xl font-bold">1.247</p>
+              <p className="text-xl font-bold">{stats.totalPecas.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -177,6 +162,8 @@ const Producao = () => {
               <Input
                 placeholder="Buscar ordem ou produto..."
                 className="pl-9 conffec-input"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
               />
             </div>
 
@@ -186,9 +173,9 @@ const Producao = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os Status</SelectItem>
-                <SelectItem value="Em andamento">Em Andamento</SelectItem>
-                <SelectItem value="Finalizada">Finalizada</SelectItem>
-                <SelectItem value="Aguardando inspeção">Aguardando Inspeção</SelectItem>
+                <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                <SelectItem value="finalizada">Finalizada</SelectItem>
+                <SelectItem value="aguardando_inspecao">Aguardando Inspeção</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -208,6 +195,7 @@ const Producao = () => {
               <TableHead>Nº OP</TableHead>
               <TableHead>Produto</TableHead>
               <TableHead>Grupo Responsável</TableHead>
+              <TableHead>Meta</TableHead>
               <TableHead>Qtd. Produzida</TableHead>
               <TableHead>Qtd. Reprovada</TableHead>
               <TableHead>Status</TableHead>
@@ -218,21 +206,40 @@ const Producao = () => {
           <TableBody>
             {ordensFiltradas.map((ordem) => (
               <TableRow key={ordem.id}>
-                <TableCell className="font-medium">{ordem.id}</TableCell>
-                <TableCell>{ordem.produto}</TableCell>
+                <TableCell className="font-medium">{ordem.numero_op}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{ordem.grupo}</Badge>
+                  <div>
+                    <div className="font-medium">{ordem.produto}</div>
+                    {ordem.tipo_peca && (
+                      <div className="text-sm text-muted-foreground">{ordem.tipo_peca}</div>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <span className="font-medium text-success">{ordem.qtdProduzida}</span>
+                  {ordem.grupos ? (
+                    <Badge variant="outline">{ordem.grupos.nome}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground">Não atribuído</span>
+                  )}
                 </TableCell>
                 <TableCell>
-                  <span className={`font-medium ${ordem.qtdReprovada > 0 ? 'text-error' : 'text-muted-foreground'}`}>
-                    {ordem.qtdReprovada}
+                  <span className="font-medium">{ordem.meta_producao || 0}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-medium text-success">{ordem.qtde_total_produzida || 0}</span>
+                </TableCell>
+                <TableCell>
+                  <span className={`font-medium ${(ordem.qtde_total_reprovada || 0) > 0 ? 'text-error' : 'text-muted-foreground'}`}>
+                    {ordem.qtde_total_reprovada || 0}
                   </span>
                 </TableCell>
-                <TableCell>{getStatusBadge(ordem.status)}</TableCell>
-                <TableCell>{ordem.prazo}</TableCell>
+                <TableCell>{getStatusBadge(ordem.status || 'em_andamento')}</TableCell>
+                <TableCell>
+                  {ordem.prazo_entrega ? 
+                    format(new Date(ordem.prazo_entrega), 'dd/MM/yyyy', { locale: ptBR }) : 
+                    'Não definido'
+                  }
+                </TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button size="sm" variant="outline" asChild>
                     <Link to={`/producao/${ordem.id}`}>
@@ -247,6 +254,16 @@ const Producao = () => {
             ))}
           </TableBody>
         </Table>
+
+        {ordensFiltradas.length === 0 && (
+          <div className="p-8 text-center text-muted-foreground">
+            <PlayCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p>Nenhuma ordem de produção encontrada.</p>
+            {canManageGroups() && (
+              <p className="text-sm mt-2">Crie uma nova ordem para começar.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

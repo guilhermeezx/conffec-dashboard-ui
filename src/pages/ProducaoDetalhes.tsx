@@ -1,311 +1,259 @@
 
-import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  ArrowLeft,
-  Plus,
+  ArrowLeft, 
+  Calendar, 
+  Target, 
+  Users, 
+  Package,
   CheckCircle2,
-  Clock,
-  AlertCircle,
-  User
+  PlayCircle,
+  PauseCircle,
+  AlertTriangle
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useOrdem } from "@/hooks/useOrdens";
+import { useRegistrosProducao } from "@/hooks/useRegistrosProducao";
+import RegistrarProducaoDialog from "@/components/producao/RegistrarProducaoDialog";
+import RegistrosProducaoTable from "@/components/producao/RegistrosProducaoTable";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-const ordemDetalhes = {
-  id: "OP-002",
-  produto: "Calça Jeans Masculina",
-  grupo: "Costura B",
-  qtdTotal: 200,
-  qtdProduzida: 89,
-  qtdReprovada: 3,
-  status: "Em andamento",
-  dataInicio: "18/11/2024",
-  prazo: "25/11/2024",
-  responsavel: "Maria Santos"
+const getStatusBadge = (status: string) => {
+  switch (status) {
+    case "finalizada":
+      return <Badge className="bg-success/10 text-success border-success/20">
+        <CheckCircle2 className="w-4 h-4 mr-1" />
+        Finalizada
+      </Badge>;
+    case "em_andamento":
+      return <Badge className="bg-primary/10 text-primary border-primary/20">
+        <PlayCircle className="w-4 h-4 mr-1" />
+        Em andamento
+      </Badge>;
+    case "aguardando_inspecao":
+      return <Badge className="bg-warning/10 text-warning border-warning/20">
+        <PauseCircle className="w-4 h-4 mr-1" />
+        Aguardando inspeção
+      </Badge>;
+    default:
+      return <Badge variant="outline">{status}</Badge>;
+  }
 };
 
-const registrosProducao = [
-  {
-    id: 1,
-    qtdProduzida: 45,
-    qtdReprovada: 2,
-    responsavel: "João Silva",
-    observacoes: "Pequenos ajustes no acabamento",
-    dataHora: "20/11/2024 14:30",
-    statusInspecao: "Aprovado"
-  },
-  {
-    id: 2,
-    qtdProduzida: 44,
-    qtdReprovada: 1,
-    responsavel: "Maria Santos",
-    observacoes: "Produção normal",
-    dataHora: "20/11/2024 09:15",
-    statusInspecao: "Aprovado"
-  },
-  {
-    id: 3,
-    qtdProduzida: 0,
-    qtdReprovada: 0,
-    responsavel: "Carlos Lima",
-    observacoes: "Aguardando material",
-    dataHora: "19/11/2024 16:45",
-    statusInspecao: "Pendente"
-  }
-];
-
 const ProducaoDetalhes = () => {
-  const { id } = useParams();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    qtdProduzida: "",
-    qtdReprovada: "",
-    observacoes: ""
-  });
+  const { id } = useParams<{ id: string }>();
+  const { canRegisterProduction } = useAuth();
+  const { data: ordem, isLoading: loadingOrdem } = useOrdem(id!);
+  const { data: registros } = useRegistrosProducao(id);
 
-  const getStatusInspecaoBadge = (status: string) => {
-    switch (status) {
-      case "Aprovado":
-        return <Badge className="bg-success/10 text-success border-success/20">Aprovado</Badge>;
-      case "Reprovado":
-        return <Badge className="bg-error/10 text-error border-error/20">Reprovado</Badge>;
-      case "Pendente":
-        return <Badge className="bg-warning/10 text-warning border-warning/20">Pendente</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
+  if (loadingOrdem) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando detalhes da ordem...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Aqui seria implementada a lógica para salvar o registro
-    console.log("Registrando produção:", formData);
-    setModalOpen(false);
-    setFormData({ qtdProduzida: "", qtdReprovada: "", observacoes: "" });
-  };
+  if (!ordem) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-warning" />
+          <h2 className="text-xl font-semibold mb-2">Ordem não encontrada</h2>
+          <p className="text-muted-foreground mb-4">A ordem de produção solicitada não existe.</p>
+          <Button asChild>
+            <Link to="/producao">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar às Ordens
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
-  const progressoPercentual = (ordemDetalhes.qtdProduzida / ordemDetalhes.qtdTotal) * 100;
+  // Calculate progress
+  const totalProduzido = ordem.qtde_total_produzida || 0;
+  const meta = ordem.meta_producao || 0;
+  const progresso = meta > 0 ? Math.min((totalProduzido / meta) * 100, 100) : 0;
+
+  // Statistics from records
+  const registrosAprovados = registros?.filter(r => r.status_inspecao === 'aprovado').length || 0;
+  const registrosPendentes = registros?.filter(r => r.status_inspecao === 'pendente').length || 0;
+  const registrosReprovados = registros?.filter(r => r.status_inspecao === 'reprovado').length || 0;
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Cabeçalho */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" asChild>
             <Link to="/producao">
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-foreground">{ordemDetalhes.id}</h1>
-            <p className="text-muted-foreground">{ordemDetalhes.produto}</p>
+            <h1 className="text-3xl font-bold text-foreground">{ordem.numero_op}</h1>
+            <p className="text-muted-foreground">{ordem.produto}</p>
           </div>
         </div>
         
-        <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="conffec-button-primary gap-2">
-              <Plus className="w-4 h-4" />
-              Registrar Produção
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <form onSubmit={handleSubmit}>
-              <DialogHeader>
-                <DialogTitle>Registrar Nova Produção</DialogTitle>
-                <DialogDescription>
-                  Grupo: {ordemDetalhes.grupo} | Produto: {ordemDetalhes.produto}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="qtdProduzida">Qtd. Produzida</Label>
-                    <Input
-                      id="qtdProduzida"
-                      type="number"
-                      placeholder="0"
-                      value={formData.qtdProduzida}
-                      onChange={(e) => setFormData({...formData, qtdProduzida: e.target.value})}
-                      className="text-lg h-12"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="qtdReprovada">Qtd. Reprovada</Label>
-                    <Input
-                      id="qtdReprovada"
-                      type="number"
-                      placeholder="0"
-                      value={formData.qtdReprovada}
-                      onChange={(e) => setFormData({...formData, qtdReprovada: e.target.value})}
-                      className="text-lg h-12"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="observacoes">Observações</Label>
-                  <Textarea
-                    id="observacoes"
-                    placeholder="Comentários sobre a produção..."
-                    value={formData.observacoes}
-                    onChange={(e) => setFormData({...formData, observacoes: e.target.value})}
-                    className="min-h-20"
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground bg-muted p-3 rounded-lg">
-                  <p><strong>Data/Hora:</strong> {new Date().toLocaleString('pt-BR')}</p>
-                  <p><strong>Responsável:</strong> {ordemDetalhes.responsavel}</p>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit" className="conffec-button-primary">
-                  Registrar Produção
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Informações da OP */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="conffec-card p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Informações Gerais</h3>
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm text-muted-foreground">Grupo Responsável</p>
-              <Badge variant="outline" className="mt-1">{ordemDetalhes.grupo}</Badge>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Data de Início</p>
-              <p className="font-medium">{ordemDetalhes.dataInicio}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Prazo</p>
-              <p className="font-medium">{ordemDetalhes.prazo}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Status</p>
-              <Badge className="bg-primary/10 text-primary border-primary/20 mt-1">
-                <Clock className="w-3 h-3 mr-1" />
-                {ordemDetalhes.status}
-              </Badge>
-            </div>
-          </div>
-        </div>
-
-        <div className="conffec-card p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Progresso</h3>
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-muted-foreground">Produção</span>
-                <span className="font-bold text-lg">{ordemDetalhes.qtdProduzida}/{ordemDetalhes.qtdTotal}</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-3">
-                <div 
-                  className="bg-primary h-3 rounded-full transition-all duration-300" 
-                  style={{ width: `${progressoPercentual}%` }}
-                ></div>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">{progressoPercentual.toFixed(1)}% concluído</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              <div className="text-center p-3 bg-success/10 rounded-lg">
-                <p className="text-2xl font-bold text-success">{ordemDetalhes.qtdProduzida}</p>
-                <p className="text-sm text-success">Produzidas</p>
-              </div>
-              <div className="text-center p-3 bg-error/10 rounded-lg">
-                <p className="text-2xl font-bold text-error">{ordemDetalhes.qtdReprovada}</p>
-                <p className="text-sm text-error">Reprovadas</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="conffec-card p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Responsável</h3>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-              <User className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <p className="font-medium">{ordemDetalhes.responsavel}</p>
-              <p className="text-sm text-muted-foreground">Supervisora do Grupo</p>
-            </div>
-          </div>
-          
-          <div className="mt-4 p-3 bg-muted rounded-lg">
-            <div className="flex items-center gap-2 text-sm">
-              <AlertCircle className="w-4 h-4 text-warning" />
-              <span>Restam {ordemDetalhes.qtdTotal - ordemDetalhes.qtdProduzida} peças</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-3">
+          {getStatusBadge(ordem.status || 'em_andamento')}
+          {canRegisterProduction() && ordem.status !== 'finalizada' && (
+            <RegistrarProducaoDialog opId={ordem.id} />
+          )}
         </div>
       </div>
 
-      {/* Histórico de registros */}
-      <div className="conffec-card p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">
-          Registros de Produção
-        </h3>
-        
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Data/Hora</TableHead>
-              <TableHead>Responsável</TableHead>
-              <TableHead>Qtd. Produzida</TableHead>
-              <TableHead>Qtd. Reprovada</TableHead>
-              <TableHead>Observações</TableHead>
-              <TableHead>Status Inspeção</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {registrosProducao.map((registro) => (
-              <TableRow key={registro.id}>
-                <TableCell className="font-medium">{registro.dataHora}</TableCell>
-                <TableCell>{registro.responsavel}</TableCell>
-                <TableCell>
-                  <span className="font-medium text-success">{registro.qtdProduzida}</span>
-                </TableCell>
-                <TableCell>
-                  <span className={`font-medium ${registro.qtdReprovada > 0 ? 'text-error' : 'text-muted-foreground'}`}>
-                    {registro.qtdReprovada}
-                  </span>
-                </TableCell>
-                <TableCell className="max-w-xs truncate">{registro.observacoes}</TableCell>
-                <TableCell>{getStatusInspecaoBadge(registro.statusInspecao)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Meta de Produção</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{meta.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">
+              peças planejadas
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Produzido</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-success">{totalProduzido.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">
+              {progresso.toFixed(1)}% da meta
+            </p>
+            <div className="w-full bg-muted rounded-full h-2 mt-2">
+              <div 
+                className="bg-success h-2 rounded-full transition-all duration-300" 
+                style={{ width: `${progresso}%` }}
+              ></div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Grupo Responsável</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold">
+              {ordem.grupos?.nome || 'Não atribuído'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {ordem.grupos?.setor || 'Setor não definido'}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Prazo</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold">
+              {ordem.prazo_entrega ? 
+                format(new Date(ordem.prazo_entrega), 'dd/MM/yyyy', { locale: ptBR }) : 
+                'Não definido'
+              }
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {ordem.tipo_peca || 'Tipo não especificado'}
+            </p>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Main Content */}
+      <Tabs defaultValue="registros" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="registros">Registros de Produção</TabsTrigger>
+          <TabsTrigger value="aprovados">
+            Aprovados ({registrosAprovados})
+          </TabsTrigger>
+          <TabsTrigger value="pendentes">
+            Pendentes ({registrosPendentes})
+          </TabsTrigger>
+          <TabsTrigger value="reprovados">
+            Reprovados ({registrosReprovados})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="registros" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Todos os Registros</CardTitle>
+              <CardDescription>
+                Histórico completo de produção desta ordem
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RegistrosProducaoTable opId={ordem.id} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="aprovados" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Registros Aprovados</CardTitle>
+              <CardDescription>
+                Produção aprovada pela inspeção
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RegistrosProducaoTable opId={ordem.id} status="aprovado" />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="pendentes" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Registros Pendentes</CardTitle>
+              <CardDescription>
+                Aguardando inspeção e aprovação
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RegistrosProducaoTable opId={ordem.id} status="pendente" />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="reprovados" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Registros Reprovados</CardTitle>
+              <CardDescription>
+                Produção reprovada - disponível para reprocessamento
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RegistrosProducaoTable opId={ordem.id} status="reprovado" />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
