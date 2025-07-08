@@ -8,9 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Factory, Loader2, Mail, Lock, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const Auth = () => {
   const { signIn, signUp, isLoading } = useAuth();
+  const { toast } = useToast();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({ email: '', password: '', nome: '', confirmPassword: '' });
 
@@ -18,8 +20,13 @@ const Auth = () => {
     e.preventDefault();
     try {
       await signIn(loginData.email, loginData.password);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro no login:', error);
+      toast({
+        title: "Erro no login",
+        description: error.message || "Verifique suas credenciais e tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -27,14 +34,27 @@ const Auth = () => {
     e.preventDefault();
     
     if (registerData.password !== registerData.confirmPassword) {
-      alert('As senhas não coincidem!');
+      toast({
+        title: "Erro no cadastro",
+        description: "As senhas não coincidem!",
+        variant: "destructive",
+      });
       return;
     }
     
     try {
       await signUp(registerData.email, registerData.password, registerData.nome);
-    } catch (error) {
+      toast({
+        title: "Cadastro realizado",
+        description: "Verifique seu email para confirmar o cadastro!",
+      });
+    } catch (error: any) {
       console.error('Erro no cadastro:', error);
+      toast({
+        title: "Erro no cadastro",
+        description: error.message || "Ocorreu um erro ao criar sua conta.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -79,6 +99,7 @@ const Auth = () => {
                         value={loginData.email}
                         onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -95,6 +116,7 @@ const Auth = () => {
                         value={loginData.password}
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -126,6 +148,7 @@ const Auth = () => {
                         value={registerData.nome}
                         onChange={(e) => setRegisterData({ ...registerData, nome: e.target.value })}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -142,6 +165,7 @@ const Auth = () => {
                         value={registerData.email}
                         onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -158,6 +182,7 @@ const Auth = () => {
                         value={registerData.password}
                         onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -174,6 +199,7 @@ const Auth = () => {
                         value={registerData.confirmPassword}
                         onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>

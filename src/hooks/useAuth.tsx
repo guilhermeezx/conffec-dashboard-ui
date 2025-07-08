@@ -67,71 +67,120 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let mounted = true;
+
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select(`id, nome, email, role`)
-          .eq('id', session.user.id)
-          .single();
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
 
         if (error) {
-          console.error('Erro ao buscar perfil:', error);
+          console.error('Erro ao buscar sessão:', error);
           setUser(null);
-        } else {
-          setUser(profile as User);
+          setIsLoading(false);
+          return;
         }
-      } else {
-        setUser(null);
+        
+        if (session?.user) {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select(`id, nome, email, role`)
+            .eq('id', session.user.id)
+            .single();
+
+          if (!mounted) return;
+
+          if (profileError) {
+            console.error('Erro ao buscar perfil:', profileError);
+            setUser(null);
+          } else {
+            setUser(profile as User);
+          }
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Erro na inicialização da sessão:', error);
+        if (mounted) {
+          setUser(null);
+          setIsLoading(false);
+        }
       }
-      setIsLoading(false);
     };
 
     getInitialSession();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select(`id, nome, email, role`)
-          .eq('id', session.user.id)
-          .single();
+      console.log('Auth state change:', event, session?.user?.email);
+      
+      if (!mounted) return;
 
-        if (error) {
-          console.error('Erro ao buscar perfil:', error);
-          setUser(null);
-        } else {
-          setUser(profile as User);
+      if (session?.user) {
+        try {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select(`id, nome, email, role`)
+            .eq('id', session.user.id)
+            .single();
+
+          if (!mounted) return;
+
+          if (error) {
+            console.error('Erro ao buscar perfil:', error);
+            setUser(null);
+          } else {
+            setUser(profile as User);
+            // Navigate to dashboard on successful login
+            if (event === 'SIGNED_IN') {
+              navigate('/');
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao processar perfil:', error);
+          if (mounted) setUser(null);
         }
       } else {
         setUser(null);
       }
-      setIsLoading(false);
+      
+      if (mounted) setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const signIn = async (email: string, password?: string) => {
     try {
+      setIsLoading(true);
+      
       if (password) {
         // Email/password login
         const { error } = await supabase.auth.signInWithPassword({ 
           email, 
           password 
         });
-        if (error) throw error;
+        if (error) {
+          console.error('Erro no login:', error);
+          throw error;
+        }
       } else {
         // Magic link login
         const { error } = await supabase.auth.signInWithOtp({ email });
-        if (error) throw error;
+        if (error) {
+          console.error('Erro no magic link:', error);
+          throw error;
+        }
         alert('Verifique seu email para o link de login mágico!');
       }
     } catch (error) {
+      setIsLoading(false);
       console.error("Erro ao fazer login:", error);
       throw error;
     }
@@ -139,6 +188,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signUp = async (email: string, password: string, nome: string) => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -148,9 +198,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }
         }
       });
-      if (error) throw error;
+      if (error) {
+        console.error('Erro no cadastro:', error);
+        throw error;
+      }
       alert('Verifique seu email para confirmar o cadastro!');
     } catch (error) {
+      setIsLoading(false);
       console.error("Erro ao fazer cadastro:", error);
       throw error;
     }
@@ -158,11 +212,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     try {
+      setIsLoading(true);
       await supabase.auth.signOut();
       setUser(null);
       navigate('/auth');
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
