@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -7,17 +6,36 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Factory, Loader2, Mail, Lock, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 const Auth = () => {
-  const { signIn, signUp, isLoading } = useAuth();
+  const { signIn, signUp, isLoading, user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({ email: '', password: '', nome: '', confirmPassword: '' });
 
+  // Se usuário já está logado, redireciona para dashboard
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!loginData.email || !loginData.password) {
+      toast({
+        title: "Erro no login",
+        description: "Por favor, preencha email e senha.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await signIn(loginData.email, loginData.password);
     } catch (error: any) {
@@ -57,6 +75,11 @@ const Auth = () => {
       });
     }
   };
+
+  // Se usuário já está logado, não mostra a página de auth
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

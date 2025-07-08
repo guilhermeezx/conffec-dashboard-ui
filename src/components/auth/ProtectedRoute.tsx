@@ -14,12 +14,13 @@ const ProtectedRoute = ({ children, requiredRoles }: ProtectedRouteProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Só redireciona se não estiver carregando e não houver usuário
     if (!isLoading && !user) {
       navigate('/auth');
     }
   }, [user, isLoading, navigate]);
 
-  // Show loading while checking auth
+  // Mostra loading enquanto verifica autenticação
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -31,12 +32,12 @@ const ProtectedRoute = ({ children, requiredRoles }: ProtectedRouteProps) => {
     );
   }
 
-  // Redirect to auth if not authenticated
+  // Se não há usuário e não está carregando, não renderiza nada (o useEffect já redirecionou)
   if (!user) {
     return null;
   }
 
-  // Check role permissions if specified
+  // Verifica permissões de role se especificadas
   if (requiredRoles && user) {
     const hasRequiredRole = requiredRoles.includes(user.role as any);
     if (!hasRequiredRole) {

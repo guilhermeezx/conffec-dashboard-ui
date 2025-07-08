@@ -15,7 +15,7 @@ interface AuthContextType {
   profile: User | null;
   isLoading: boolean;
   loading: boolean;
-  signIn: (email: string, password?: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, nome: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -69,8 +69,54 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     let mounted = true;
 
-    // Get initial session
-    const getInitialSession = async () => {
+    // Função para buscar perfil do usuário
+    const fetchUserProfile = async (userId: string) => {
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('id, nome, email, role')
+          .eq('id', userId)
+          .single();
+
+        if (error) {
+          console.error('Erro ao buscar perfil:', error);
+          return null;
+        }
+
+        return profile as User;
+      } catch (error) {
+        console.error('Erro ao processar perfil:', error);
+        return null;
+      }
+    };
+
+    // Configurar listener de mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change:', event, session?.user?.email);
+      
+      if (!mounted) return;
+
+      if (session?.user) {
+        const profile = await fetchUserProfile(session.user.id);
+        if (mounted) {
+          setUser(profile);
+          if (event === 'SIGNED_IN') {
+            navigate('/');
+          }
+        }
+      } else {
+        if (mounted) {
+          setUser(null);
+        }
+      }
+      
+      if (mounted) {
+        setIsLoading(false);
+      }
+    });
+
+    // Verificar sessão inicial
+    const checkInitialSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
@@ -84,24 +130,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         
         if (session?.user) {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select(`id, nome, email, role`)
-            .eq('id', session.user.id)
-            .single();
-
-          if (!mounted) return;
-
-          if (profileError) {
-            console.error('Erro ao buscar perfil:', profileError);
-            setUser(null);
-          } else {
-            setUser(profile as User);
+          const profile = await fetchUserProfile(session.user.id);
+          if (mounted) {
+            setUser(profile);
           }
         } else {
-          setUser(null);
+          if (mounted) {
+            setUser(null);
+          }
         }
-        setIsLoading(false);
+        
+        if (mounted) {
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error('Erro na inicialização da sessão:', error);
         if (mounted) {
@@ -111,44 +152,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
 
-    getInitialSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session?.user?.email);
-      
-      if (!mounted) return;
-
-      if (session?.user) {
-        try {
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select(`id, nome, email, role`)
-            .eq('id', session.user.id)
-            .single();
-
-          if (!mounted) return;
-
-          if (error) {
-            console.error('Erro ao buscar perfil:', error);
-            setUser(null);
-          } else {
-            setUser(profile as User);
-            // Navigate to dashboard on successful login
-            if (event === 'SIGNED_IN') {
-              navigate('/');
-            }
-          }
-        } catch (error) {
-          console.error('Erro ao processar perfil:', error);
-          if (mounted) setUser(null);
-        }
-      } else {
-        setUser(null);
-      }
-      
-      if (mounted) setIsLoading(false);
-    });
+    checkInitialSession();
 
     return () => {
       mounted = false;
@@ -156,29 +160,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, [navigate]);
 
-  const signIn = async (email: string, password?: string) => {
+  const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
       
-      if (password) {
-        // Email/password login
-        const { error } = await supabase.auth.signInWithPassword({ 
-          email, 
-          password 
-        });
-        if (error) {
-          console.error('Erro no login:', error);
-          throw error;
-        }
-      } else {
-        // Magic link login
-        const { error } = await supabase.auth.signInWithOtp({ email });
-        if (error) {
-          console.error('Erro no magic link:', error);
-          throw error;
-        }
-        alert('Verifique seu email para o link de login mágico!');
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+      });
+      
+      if (error) {
+        console.error('Erro no login:', error);
+        throw error;
       }
+      
+      // O redirecionamento será feito pelo onAuthStateChange
     } catch (error) {
       setIsLoading(false);
       console.error("Erro ao fazer login:", error);
@@ -225,9 +221,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const value: AuthContextType = {
     user,
-    profile: user, // profile is the same as user
+    profile: user, // profile é o mesmo que user para compatibilidade
     isLoading,
-    loading: isLoading, // for backward compatibility
+    loading: isLoading, // para compatibilidade
     signIn,
     signUp,
     signOut,
