@@ -10,17 +10,17 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requiredRoles }: ProtectedRouteProps) => {
-  const { user, profile, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isLoading && !user) {
       navigate('/auth');
     }
-  }, [user, loading, navigate]);
+  }, [user, isLoading, navigate]);
 
   // Show loading while checking auth
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -37,8 +37,8 @@ const ProtectedRoute = ({ children, requiredRoles }: ProtectedRouteProps) => {
   }
 
   // Check role permissions if specified
-  if (requiredRoles && profile) {
-    const hasRequiredRole = requiredRoles.includes(profile.role);
+  if (requiredRoles && user) {
+    const hasRequiredRole = requiredRoles.includes(user.role as any);
     if (!hasRequiredRole) {
       return (
         <div className="min-h-screen flex items-center justify-center">

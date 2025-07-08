@@ -10,23 +10,32 @@ import { Factory, Loader2, Mail, Lock, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Auth = () => {
-  const { signIn, signUp, loading } = useAuth();
+  const { signIn, signUp, isLoading } = useAuth();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({ email: '', password: '', nome: '', confirmPassword: '' });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signIn(loginData.email, loginData.password);
+    try {
+      await signIn(loginData.email, loginData.password);
+    } catch (error) {
+      console.error('Erro no login:', error);
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (registerData.password !== registerData.confirmPassword) {
+      alert('As senhas não coincidem!');
       return;
     }
     
-    await signUp(registerData.email, registerData.password, registerData.nome);
+    try {
+      await signUp(registerData.email, registerData.password, registerData.nome);
+    } catch (error) {
+      console.error('Erro no cadastro:', error);
+    }
   };
 
   return (
@@ -90,8 +99,8 @@ const Auth = () => {
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? (
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Entrando...
@@ -169,8 +178,8 @@ const Auth = () => {
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? (
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Cadastrando...

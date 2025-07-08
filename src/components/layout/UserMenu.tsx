@@ -13,11 +13,11 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { User, LogOut, Settings } from 'lucide-react';
 
 const UserMenu = () => {
-  const { profile, signOut } = useAuth();
+  const { user, signOut } = useAuth();
 
-  if (!profile) return null;
+  if (!user) return null;
 
-  const initials = profile.nome
+  const initials = user.nome
     .split(' ')
     .map(name => name.charAt(0))
     .join('')
@@ -51,12 +51,12 @@ const UserMenu = () => {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{profile.nome}</p>
+            <p className="text-sm font-medium leading-none">{user.nome}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {profile.email}
+              {user.email}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {getRoleLabel(profile.role)}
+              {getRoleLabel(user.role)}
             </p>
           </div>
         </DropdownMenuLabel>
