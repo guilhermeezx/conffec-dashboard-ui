@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,13 +13,11 @@ const ProtectedRoute = ({ children, requiredRoles }: ProtectedRouteProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Só redireciona se não estiver carregando e não houver usuário
     if (!isLoading && !user) {
       navigate('/auth');
     }
   }, [user, isLoading, navigate]);
 
-  // Mostra loading enquanto verifica autenticação
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -32,7 +29,6 @@ const ProtectedRoute = ({ children, requiredRoles }: ProtectedRouteProps) => {
     );
   }
 
-  // Se não há usuário e não está carregando, não renderiza nada (o useEffect já redirecionou)
   if (!user) {
     return null;
   }

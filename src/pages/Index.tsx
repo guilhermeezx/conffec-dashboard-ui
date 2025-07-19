@@ -8,16 +8,16 @@ import { Factory, Users, BarChart3, Shield, ArrowRight, Loader2 } from 'lucide-r
 import { Link } from 'react-router-dom';
 
 const Index = () => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!isLoading && user) {
       navigate('/');
     }
-  }, [user, loading, navigate]);
+  }, [user, isLoading, navigate]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
