@@ -18,6 +18,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useOrdem } from "@/hooks/useOrdens";
 import { useRegistrosProducao } from "@/hooks/useRegistrosProducao";
+import { useForceRecalculateProductionTotals } from "@/hooks/useForceRecalculateProductionTotals";
 import RegistrarProducaoDialog from "@/components/producao/RegistrarProducaoDialog";
 import RegistrosProducaoTable from "@/components/producao/RegistrosProducaoTable";
 import { format } from "date-fns";
@@ -47,9 +48,10 @@ const getStatusBadge = (status: string) => {
 
 const ProducaoDetalhes = () => {
   const { id } = useParams<{ id: string }>();
-  const { canRegisterProduction } = useAuth();
+  const { canRegisterProduction, canManageGroups } = useAuth();
   const { data: ordem, isLoading: loadingOrdem } = useOrdem(id!);
   const { data: registros } = useRegistrosProducao(id);
+  const recalculateProductionTotals = useForceRecalculateProductionTotals();
 
   if (loadingOrdem) {
     return (
@@ -111,6 +113,15 @@ const ProducaoDetalhes = () => {
           {getStatusBadge(ordem.status || 'em_andamento')}
           {canRegisterProduction() && ordem.status !== 'finalizada' && (
             <RegistrarProducaoDialog opId={ordem.id} />
+          )}
+          {canManageGroups() && (
+            <Button 
+              variant="outline" 
+              onClick={() => recalculateProductionTotals.mutate(ordem.id)}
+              disabled={recalculateProductionTotals.isPending}
+            >
+              {recalculateProductionTotals.isPending ? 'Recalculando...' : 'Recalcular Totais'}
+            </Button>
           )}
         </div>
       </div>

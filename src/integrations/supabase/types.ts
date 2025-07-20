@@ -55,6 +55,51 @@ export type Database = {
           },
         ]
       }
+      colaboradores_individuais: {
+        Row: {
+          created_at: string
+          data_admissao: string | null
+          email: string
+          funcao: string
+          id: string
+          nome: string
+          observacoes: string | null
+          situacao: string
+          tipo_remuneracao: string
+          updated_at: string
+          user_id: string
+          valor_por_peca: number | null
+        }
+        Insert: {
+          created_at?: string
+          data_admissao?: string | null
+          email: string
+          funcao: string
+          id?: string
+          nome: string
+          observacoes?: string | null
+          situacao?: string
+          tipo_remuneracao?: string
+          updated_at?: string
+          user_id: string
+          valor_por_peca?: number | null
+        }
+        Update: {
+          created_at?: string
+          data_admissao?: string | null
+          email?: string
+          funcao?: string
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          situacao?: string
+          tipo_remuneracao?: string
+          updated_at?: string
+          user_id?: string
+          valor_por_peca?: number | null
+        }
+        Relationships: []
+      }
       documentos: {
         Row: {
           colaborador_id: string | null
