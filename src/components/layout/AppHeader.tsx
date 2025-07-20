@@ -11,12 +11,15 @@ export default function AppHeader() {
   const { user } = useAuth();
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-4">
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mr-2 h-4" />
+    <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-background px-4">
+      {/* Left side */}
+      <div className="flex items-center gap-2">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="h-4" />
+      </div>
       
-      {/* Search */}
-      <div className="flex-1 max-w-md">
+      {/* Center - Search */}
+      <div className="flex-1 max-w-md mx-4">
         <div className="relative">
           <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
