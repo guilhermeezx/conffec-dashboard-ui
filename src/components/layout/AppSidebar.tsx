@@ -12,6 +12,7 @@ import {
   Bot,
   UsersRound,
   Target,
+  FactoryIcon,
 } from "lucide-react";
 import ConffecIcon from "@/components/ui/conffec-icon";
 
@@ -36,9 +37,9 @@ const menuItems = [
   { 
     title: "Produção", 
     url: "/producao", 
-    icon: () => <ConffecIcon className="w-5 h-5" />,
+    icon: Factory,
     subItems: [
-      { title: "Ordens de Produção", url: "/producao", icon: () => <ConffecIcon className="w-4 h-4" /> },
+      { title: "Ordens de Produção", url: "/producao", icon: FactoryIcon },
       { title: "Grupos", url: "/grupos", icon: UsersRound },
       { title: "Metas", url: "/metas", icon: Target },
     ]

@@ -31,6 +31,7 @@ import {
 import { MoreHorizontal, Edit2, Trash2, Users, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import ColaboradorPerfil from '@/pages/ColaboradorPerfil';
 
 export default function ColaboradoresTable() {
   const { canManageGroups } = useAuth();
@@ -41,6 +42,8 @@ export default function ColaboradoresTable() {
   const [colaboradorToEdit, setColaboradorToEdit] = useState<ProfileCompleto | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
+  
+  
   const getSituacaoBadge = (situacao?: string) => {
     switch (situacao) {
       case 'ativo':
@@ -109,7 +112,12 @@ export default function ColaboradoresTable() {
         </TableHeader>
         <TableBody>
           {colaboradores.map((colaborador) => (
-            <TableRow key={colaborador.id}>
+            <TableRow
+  key={colaborador.id}
+  onClick={() => window.location.href = `/colaboradorPerfil/${colaborador.id}`}
+  className="cursor-pointer hover:bg-muted transition-colors"
+>
+
               <TableCell>
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-muted-foreground" />

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -21,20 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const colaboradorDados = {
-  id: 1,
-  nome: "João Silva",
-  cpf: "123.456.789-00",
-  funcao: "Operador de Costura",
-  grupo: "Costura A",
-  admissao: "15/01/2023",
-  situacao: "Ativo",
-  metasAtingidas: 8,
-  premioZeroFalta: true,
-  horasExtras: 12,
-  salario: "R$ 2.450,00"
-};
+import { useProfile } from "@/hooks/useProfiles";
 
 const documentos = [
   { tipo: "RG", nome: "rg_joao_silva.pdf", validade: "25/08/2029", status: "Válido" },
@@ -52,6 +38,7 @@ const metasHistorico = [
 
 const ColaboradorPerfil = () => {
   const { id } = useParams();
+  const { data: colaboradorDados, isLoading, error } = useProfile(id || "");
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -66,6 +53,14 @@ const ColaboradorPerfil = () => {
     }
   };
 
+  if (isLoading) {
+    return <div>Carregando dados do colaborador...</div>;
+  }
+
+  if (error || !colaboradorDados) {
+    return <div>Erro ao carregar dados do colaborador.</div>;
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Cabeçalho */}
@@ -78,7 +73,7 @@ const ColaboradorPerfil = () => {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-foreground">{colaboradorDados.nome}</h1>
-            <p className="text-muted-foreground">{colaboradorDados.funcao} - {colaboradorDados.grupo}</p>
+            <p className="text-muted-foreground">{colaboradorDados.role} - {colaboradorDados.grupos?.nome || "Sem grupo"}</p>
           </div>
         </div>
         
@@ -109,7 +104,7 @@ const ColaboradorPerfil = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Data de Admissão</p>
-              <p className="font-medium">{colaboradorDados.admissao}</p>
+              <p className="font-medium">{colaboradorDados.data_admissao}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Situação</p>
@@ -119,7 +114,7 @@ const ColaboradorPerfil = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Salário</p>
-              <p className="font-medium text-lg">{colaboradorDados.salario}</p>
+              <p className="font-medium text-lg">R$ 2.450,00</p>
             </div>
           </div>
         </div>
@@ -134,22 +129,20 @@ const ColaboradorPerfil = () => {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-muted-foreground">Metas Atingidas</span>
-                <span className="font-bold text-lg text-success">{colaboradorDados.metasAtingidas}/10</span>
+                <span className="font-bold text-lg text-success">8/10</span>
               </div>
               <div className="w-full bg-muted rounded-full h-2">
                 <div 
                   className="bg-success h-2 rounded-full" 
-                  style={{ width: `${(colaboradorDados.metasAtingidas / 10) * 100}%` }}
+                  style={{ width: `${(8 / 10) * 100}%` }}
                 ></div>
               </div>
             </div>
             
-            {colaboradorDados.premioZeroFalta && (
-              <div className="flex items-center gap-2 p-3 bg-success/10 rounded-lg">
-                <Award className="w-5 h-5 text-success" />
-                <span className="font-medium text-success">Prêmio Zero Falta</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2 p-3 bg-success/10 rounded-lg">
+              <Award className="w-5 h-5 text-success" />
+              <span className="font-medium text-success">Prêmio Zero Falta</span>
+            </div>
           </div>
         </div>
 
@@ -160,7 +153,7 @@ const ColaboradorPerfil = () => {
             Horas Extras
           </h3>
           <div className="text-center">
-            <p className="text-3xl font-bold text-secondary mb-1">{colaboradorDados.horasExtras}h</p>
+            <p className="text-3xl font-bold text-secondary mb-1">12h</p>
             <p className="text-sm text-muted-foreground">Acumuladas este mês</p>
             <div className="mt-4 p-3 bg-secondary/10 rounded-lg">
               <p className="text-sm font-medium text-secondary">

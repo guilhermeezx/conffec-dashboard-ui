@@ -59,6 +59,7 @@ const App = () => (
                 } />
                 <Route path="colaboradores" element={<Colaboradores />} />
                 <Route path="colaboradores/:id" element={<ColaboradorPerfil />} />
+                <Route path="colaboradorPerfil/:id" element={<ColaboradorPerfil />} />
                 <Route path="perfil" element={<Perfil />} />
                 <Route path="custo-minuto" element={<CustoMinuto />} />
                 <Route path="fiscal" element={<Fiscal />} />
