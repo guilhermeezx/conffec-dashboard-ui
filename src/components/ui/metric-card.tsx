@@ -10,7 +10,7 @@ interface MetricCardProps {
     trend: "up" | "down";
   };
   subtitle?: string;
-  icon?: LucideIcon;
+  icon?: LucideIcon | (() => JSX.Element);
   className?: string;
 }
 
@@ -41,7 +41,11 @@ export function MetricCard({
         
         {Icon && (
           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-            <Icon className="w-5 h-5 text-primary" />
+            {typeof Icon === 'function' && Icon.length === 0 ? (
+              <Icon />
+            ) : (
+              <Icon className="w-5 h-5 text-primary" />
+            )}
           </div>
         )}
       </div>

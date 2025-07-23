@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Factory, Users, BarChart3, Shield, ArrowRight, Loader2 } from 'lucide-react';
+import { Users, BarChart3, Shield, ArrowRight, Loader2 } from 'lucide-react';
+import ConffecIcon from '@/components/ui/conffec-icon';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -35,8 +36,8 @@ const Index = () => {
       <header className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Factory className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center p-1">
+              <ConffecIcon className="w-8 h-8" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Conffec</h1>
@@ -79,7 +80,7 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           <Card className="shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader>
-              <Factory className="w-12 h-12 text-primary mb-4" />
+              <ConffecIcon className="w-12 h-12" />
               <CardTitle>Controle de Produção</CardTitle>
               <CardDescription>
                 Gerencie ordens de produção, registre quantidades e acompanhe o progresso em tempo real.
@@ -119,7 +120,7 @@ const Index = () => {
 
           <Card className="shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader>
-              <Factory className="w-12 h-12 text-primary mb-4" />
+              <ConffecIcon className="w-12 h-12" />
               <CardTitle>Documentos ABVTEX</CardTitle>
               <CardDescription>
                 Gerencie documentos e certificações necessárias para compliance.

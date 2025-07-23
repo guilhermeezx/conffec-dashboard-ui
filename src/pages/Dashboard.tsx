@@ -1,8 +1,8 @@
 
 import { MetricCard } from "@/components/ui/metric-card";
+import ConffecIcon from "@/components/ui/conffec-icon";
 import { Button } from "@/components/ui/button";
 import { 
-  Factory, 
   TrendingUp, 
   DollarSign, 
   Clock,
@@ -62,7 +62,7 @@ const Dashboard = () => {
           value="1.247"
           change={{ value: "15,8%", trend: "up" }}
           subtitle="peças este mês"
-          icon={Factory}
+          icon={() => <ConffecIcon className="w-6 h-6" />}
         />
         
         <MetricCard

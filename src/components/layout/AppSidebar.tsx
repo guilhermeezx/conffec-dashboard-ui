@@ -13,6 +13,7 @@ import {
   UsersRound,
   Target,
 } from "lucide-react";
+import ConffecIcon from "@/components/ui/conffec-icon";
 
 import {
   Sidebar,
@@ -35,9 +36,9 @@ const menuItems = [
   { 
     title: "Produção", 
     url: "/producao", 
-    icon: Factory,
+    icon: () => <ConffecIcon className="w-5 h-5" />,
     subItems: [
-      { title: "Ordens de Produção", url: "/producao", icon: Factory },
+      { title: "Ordens de Produção", url: "/producao", icon: () => <ConffecIcon className="w-4 h-4" /> },
       { title: "Grupos", url: "/grupos", icon: UsersRound },
       { title: "Metas", url: "/metas", icon: Target },
     ]
@@ -77,8 +78,8 @@ export function AppSidebar() {
     <Sidebar className="border-r border-border bg-background">
       <SidebarHeader className="border-b border-border p-6">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Factory className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center p-1">
+            <ConffecIcon className="w-6 h-6" />
           </div>
           {state !== "collapsed" && (
             <div>
