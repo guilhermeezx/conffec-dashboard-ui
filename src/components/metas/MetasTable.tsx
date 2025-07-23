@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useMetas, useDeleteMeta, MetaCompleta, useProducaoRealizada } from '@/hooks/useMetas';
+import EditarMetaDialog from './EditarMetaDialog';
 import {
   Table,
   TableBody,
@@ -141,9 +142,12 @@ export default function MetasTable() {
     metaNome: ''
   });
 
+  const [editingMeta, setEditingMeta] = useState<MetaCompleta | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
   const handleEdit = (meta: MetaCompleta) => {
-    // TODO: Implementar edição
-    console.log('Editar meta:', meta);
+    setEditingMeta(meta);
+    setEditDialogOpen(true);
   };
 
   const handleDelete = async () => {
@@ -222,6 +226,12 @@ export default function MetasTable() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <EditarMetaDialog
+        meta={editingMeta}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+      />
     </>
   );
 }

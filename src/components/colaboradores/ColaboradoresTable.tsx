@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfiles, useDeleteProfile, ProfileCompleto } from '@/hooks/useProfiles';
+import EditarColaboradorDialog from './EditarColaboradorDialog';
 import {
   Table,
   TableBody,
@@ -37,6 +38,8 @@ export default function ColaboradoresTable() {
   const deleteProfile = useDeleteProfile();
   
   const [colaboradorToDelete, setColaboradorToDelete] = useState<ProfileCompleto | null>(null);
+  const [colaboradorToEdit, setColaboradorToEdit] = useState<ProfileCompleto | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const getSituacaoBadge = (situacao?: string) => {
     switch (situacao) {
@@ -143,7 +146,12 @@ export default function ColaboradoresTable() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          setColaboradorToEdit(colaborador);
+                          setEditDialogOpen(true);
+                        }}
+                      >
                         <Edit2 className="mr-2 h-4 w-4" />
                         Editar
                       </DropdownMenuItem>
@@ -187,6 +195,12 @@ export default function ColaboradoresTable() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <EditarColaboradorDialog
+        colaborador={colaboradorToEdit}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+      />
     </>
   );
 }

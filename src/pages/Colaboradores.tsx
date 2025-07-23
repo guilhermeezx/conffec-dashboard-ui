@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfiles } from "@/hooks/useProfiles";
 import { useColaboradoresIndividuais } from "@/hooks/useColaboradoresIndividuais";
 import CriarColaboradorDialog from "@/components/colaboradores/CriarColaboradorDialog";
+import CriarColaboradorCompletoDialog from "@/components/colaboradores/CriarColaboradorCompletoDialog";
 import ColaboradoresIndividuaisTable from "@/components/colaboradores/ColaboradoresIndividuaisTable";
 import ColaboradoresTable from "@/components/colaboradores/ColaboradoresTable";
 import DocumentosTable from "@/components/colaboradores/DocumentosTable";
@@ -31,7 +32,7 @@ const Colaboradores = () => {
           <p className="text-muted-foreground">Gerencie os colaboradores da empresa</p>
         </div>
         
-        {canManageGroups() && <CriarColaboradorDialog />}
+        {canManageGroups() && <CriarColaboradorCompletoDialog />}
       </div>
 
       {/* Métricas */}
