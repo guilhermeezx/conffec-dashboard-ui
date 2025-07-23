@@ -36,7 +36,7 @@ const Colaboradores = () => {
       </div>
 
       {/* Métricas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <MetricCard
           title="Total de Colaboradores"
           value={totalColaboradores}
@@ -65,10 +65,16 @@ const Colaboradores = () => {
 
       {/* Conteúdo Principal */}
       <Tabs defaultValue="colaboradores" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="colaboradores">Todos os Colaboradores</TabsTrigger>
-          <TabsTrigger value="individuais">Colaboradores Individuais</TabsTrigger>
-          <TabsTrigger value="documentos">Documentos</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="colaboradores" className="text-xs sm:text-sm">
+            Todos os Colaboradores
+          </TabsTrigger>
+          <TabsTrigger value="individuais" className="text-xs sm:text-sm">
+            Individuais
+          </TabsTrigger>
+          <TabsTrigger value="documentos" className="text-xs sm:text-sm">
+            Documentos
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="colaboradores" className="space-y-4">
@@ -79,8 +85,10 @@ const Colaboradores = () => {
                 Lista completa de todos os colaboradores do sistema
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <ColaboradoresTable />
+            <CardContent className="overflow-x-auto">
+              <div className="min-w-[800px]">
+                <ColaboradoresTable />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -93,8 +101,10 @@ const Colaboradores = () => {
                 Colaboradores que não fazem parte de grupos de produção (revisores, acabamento, etc.)
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <ColaboradoresIndividuaisTable />
+            <CardContent className="overflow-x-auto">
+              <div className="min-w-[600px]">
+                <ColaboradoresIndividuaisTable />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -107,8 +117,10 @@ const Colaboradores = () => {
                 Gerencie os documentos dos colaboradores
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <DocumentosTable />
+            <CardContent className="overflow-x-auto">
+              <div className="min-w-[600px]">
+                <DocumentosTable />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

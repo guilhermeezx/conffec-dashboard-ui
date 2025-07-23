@@ -15,6 +15,7 @@ import Grupos from "./pages/Grupos";
 import Metas from "./pages/Metas";
 import Colaboradores from "./pages/Colaboradores";
 import ColaboradorPerfil from "./pages/ColaboradorPerfil";
+import Perfil from "./pages/Perfil";
 import CustoMinuto from "./pages/CustoMinuto";
 import Fiscal from "./pages/Fiscal";
 import Documentos from "./pages/Documentos";
@@ -58,6 +59,7 @@ const App = () => (
                 } />
                 <Route path="colaboradores" element={<Colaboradores />} />
                 <Route path="colaboradores/:id" element={<ColaboradorPerfil />} />
+                <Route path="perfil" element={<Perfil />} />
                 <Route path="custo-minuto" element={<CustoMinuto />} />
                 <Route path="fiscal" element={<Fiscal />} />
                 <Route path="documentos" element={
