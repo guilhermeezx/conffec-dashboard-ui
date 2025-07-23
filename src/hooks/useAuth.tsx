@@ -86,35 +86,51 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     let mounted = true;
+    let sessionCheckCompleted = false;
 
     // Configurar listener de mudanças de autenticação
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth state change:', event, session?.user?.email);
       
       if (!mounted) return;
 
+      // Só processar eventos depois da verificação inicial ou em casos específicos
+      if (!sessionCheckCompleted && event !== 'INITIAL_SESSION') {
+        return;
+      }
+
       if (session?.user) {
-        const profile = await fetchUserProfile(session.user.id);
-        if (mounted) {
-          setUser(profile);
-        }
+        // Defer profile fetching to prevent deadlocks
+        setTimeout(async () => {
+          if (!mounted) return;
+          const profile = await fetchUserProfile(session.user.id);
+          if (mounted) {
+            setUser(profile);
+            setIsLoading(false);
+          }
+        }, 0);
       } else {
         if (mounted) {
           setUser(null);
+          setIsLoading(false);
         }
-      }
-      
-      if (mounted) {
-        setIsLoading(false);
       }
     });
 
-    // Verificar sessão inicial
+    // Verificar sessão inicial com timeout
     const checkInitialSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // Timeout para evitar loading infinito
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session check timeout')), 10000)
+        );
+
+        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]) as any;
         
         if (!mounted) return;
+
+        sessionCheckCompleted = true;
 
         if (error) {
           console.error('Erro ao buscar sessão:', error);
@@ -140,6 +156,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } catch (error) {
         console.error('Erro na inicialização da sessão:', error);
         if (mounted) {
+          sessionCheckCompleted = true;
           setUser(null);
           setIsLoading(false);
         }
