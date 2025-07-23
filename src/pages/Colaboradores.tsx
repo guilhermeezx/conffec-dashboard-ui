@@ -1,22 +1,26 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, UserCheck, UserX, Clock } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, FileText } from "lucide-react";
 import { MetricCard } from "@/components/ui/metric-card";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfiles } from "@/hooks/useProfiles";
 import { useColaboradoresIndividuais } from "@/hooks/useColaboradoresIndividuais";
 import CriarColaboradorDialog from "@/components/colaboradores/CriarColaboradorDialog";
 import ColaboradoresIndividuaisTable from "@/components/colaboradores/ColaboradoresIndividuaisTable";
+import ColaboradoresTable from "@/components/colaboradores/ColaboradoresTable";
+import DocumentosTable from "@/components/colaboradores/DocumentosTable";
 
 const Colaboradores = () => {
   const { canManageGroups } = useAuth();
-  const { data: colaboradores } = useColaboradoresIndividuais();
+  const { data: profiles } = useProfiles();
+  const { data: colaboradoresIndividuais } = useColaboradoresIndividuais();
 
-  // Calcular estatísticas
-  const totalColaboradores = colaboradores?.length || 0;
-  const colaboradoresAtivos = colaboradores?.filter(c => c.situacao === 'ativo').length || 0;
-  const colaboradoresInativos = colaboradores?.filter(c => c.situacao === 'inativo').length || 0;
-  const colaboradoresLicenca = colaboradores?.filter(c => c.situacao === 'licenca').length || 0;
+  // Calcular estatísticas dos profiles (colaboradores principais)
+  const totalColaboradores = profiles?.length || 0;
+  const colaboradoresAtivos = profiles?.filter(c => c.situacao === 'ativo').length || 0;
+  const colaboradoresInativos = profiles?.filter(c => c.situacao === 'inativo').length || 0;
+  const colaboradoresLicenca = profiles?.filter(c => c.situacao === 'licenca').length || 0;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -59,11 +63,26 @@ const Colaboradores = () => {
       </div>
 
       {/* Conteúdo Principal */}
-      <Tabs defaultValue="individuais" className="space-y-4">
+      <Tabs defaultValue="colaboradores" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="colaboradores">Todos os Colaboradores</TabsTrigger>
           <TabsTrigger value="individuais">Colaboradores Individuais</TabsTrigger>
-          <TabsTrigger value="grupos">Grupos de Produção</TabsTrigger>
+          <TabsTrigger value="documentos">Documentos</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="colaboradores" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Todos os Colaboradores</CardTitle>
+              <CardDescription>
+                Lista completa de todos os colaboradores do sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ColaboradoresTable />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="individuais" className="space-y-4">
           <Card>
@@ -79,20 +98,16 @@ const Colaboradores = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="grupos" className="space-y-4">
+        <TabsContent value="documentos" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Grupos de Produção</CardTitle>
+              <CardTitle>Documentos</CardTitle>
               <CardDescription>
-                Colaboradores organizados em grupos de produção
+                Gerencie os documentos dos colaboradores
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center p-8 text-muted-foreground">
-                <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>Funcionalidade em desenvolvimento</p>
-                <p className="text-sm">Em breve você poderá ver os colaboradores dos grupos aqui.</p>
-              </div>
+              <DocumentosTable />
             </CardContent>
           </Card>
         </TabsContent>

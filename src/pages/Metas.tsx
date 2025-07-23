@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -7,14 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { 
   Target,
@@ -34,149 +26,42 @@ import {
   BarChart,
   Bar,
 } from "recharts";
-
-// Componente de confetes
-const Confetti = () => {
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  useEffect(() => {
-    // Simular conquista de meta (normalmente viria de uma verificação real)
-    const timer = setTimeout(() => {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 3000);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!showConfetti) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 pointer-events-none">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center animate-fade-in">
-          <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-3xl font-bold text-primary mb-2">
-            Parabéns Grupo Costura A!
-          </h2>
-          <p className="text-xl text-success">
-            Meta Atingida! 🎯
-          </p>
-        </div>
-      </div>
-      
-      {/* Animação de confetes usando as classes CSS já definidas */}
-      <div className="confetti-container">
-        {[...Array(50)].map((_, i) => (
-          <div
-            key={i}
-            className="confetti-piece"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              backgroundColor: ['#00D084', '#3B82F6', '#F59E0B', '#EF4444'][Math.floor(Math.random() * 4)]
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const metasGerais = [
-  { periodo: 'Jan', meta: 2500, realizado: 2680 },
-  { periodo: 'Fev', meta: 2600, realizado: 2420 },
-  { periodo: 'Mar', meta: 2800, realizado: 2950 },
-  { periodo: 'Abr', meta: 2700, realizado: 2580 },
-  { periodo: 'Mai', meta: 2900, realizado: 3100 },
-  { periodo: 'Jun', meta: 3000, realizado: 2890 },
-];
-
-const metasPorGrupo = [
-  {
-    id: 1,
-    grupo: "Costura A",
-    setor: "Costura",
-    metaAtual: 850,
-    realizado: 920,
-    percentual: 108,
-    status: "Meta Atingida",
-    ultimaAtualizacao: "Hoje, 14:30"
-  },
-  {
-    id: 2,
-    grupo: "Costura B",
-    setor: "Costura",
-    metaAtual: 720,
-    realizado: 680,
-    percentual: 94,
-    status: "Em Andamento",
-    ultimaAtualizacao: "Hoje, 13:45"
-  },
-  {
-    id: 3,
-    grupo: "Corte Principal",
-    setor: "Corte",
-    metaAtual: 1200,
-    realizado: 1156,
-    percentual: 96,
-    status: "Em Andamento",
-    ultimaAtualizacao: "Hoje, 15:20"
-  },
-  {
-    id: 4,
-    grupo: "Acabamento A",
-    setor: "Acabamento",
-    metaAtual: 600,
-    realizado: 645,
-    percentual: 108,
-    status: "Meta Atingida",
-    ultimaAtualizacao: "Hoje, 12:15"
-  }
-];
+import { MetricCard } from "@/components/ui/metric-card";
+import { useAuth } from "@/hooks/useAuth";
+import { useMetas } from "@/hooks/useMetas";
+import CriarMetaDialog from "@/components/metas/CriarMetaDialog";
+import MetasTable from "@/components/metas/MetasTable";
 
 const Metas = () => {
+  const { canManageGroups } = useAuth();
+  const { data: metas } = useMetas();
   const [periodoView, setPeriodoView] = useState("mensal");
 
-  const getStatusBadge = (status: string, percentual: number) => {
-    if (percentual >= 100) {
-      return (
-        <Badge className="bg-success/10 text-success border-success/20">
-          <CheckCircle2 className="w-3 h-3 mr-1" />
-          Meta Atingida
-        </Badge>
-      );
-    } else if (percentual >= 90) {
-      return <Badge className="bg-warning/10 text-warning border-warning/20">Próximo da Meta</Badge>;
-    } else {
-      return <Badge className="bg-error/10 text-error border-error/20">Abaixo da Meta</Badge>;
-    }
-  };
+  // Calcular estatísticas das metas
+  const totalMetas = metas?.length || 0;
+  const metasAtingidas = metas?.filter(meta => {
+    // TODO: calcular se meta foi atingida baseado na produção real
+    return false; // placeholder
+  }).length || 0;
+  const metasAndamento = totalMetas - metasAtingidas;
 
-  const getIndicadorVisual = (percentual: number) => {
-    const color = percentual >= 100 ? '#00D084' : percentual >= 90 ? '#F59E0B' : '#EF4444';
-    return (
-      <div className="w-full bg-muted rounded-full h-2">
-        <div 
-          className="h-2 rounded-full transition-all duration-300" 
-          style={{ 
-            width: `${Math.min(percentual, 100)}%`,
-            backgroundColor: color
-          }}
-        ></div>
-      </div>
-    );
-  };
+  const metasGerais = [
+    { periodo: 'Jan', meta: 2500, realizado: 2680 },
+    { periodo: 'Fev', meta: 2600, realizado: 2420 },
+    { periodo: 'Mar', meta: 2800, realizado: 2950 },
+    { periodo: 'Abr', meta: 2700, realizado: 2580 },
+    { periodo: 'Mai', meta: 2900, realizado: 3100 },
+    { periodo: 'Jun', meta: 3000, realizado: 2890 },
+  ];
 
-  const totalRealizado = metasPorGrupo.reduce((acc, grupo) => acc + grupo.realizado, 0);
-  const totalMeta = metasPorGrupo.reduce((acc, grupo) => acc + grupo.metaAtual, 0);
-  const percentualGeral = (totalRealizado / totalMeta) * 100;
+  // Cálculo do total realizado baseado nos dados reais seria feito aqui
+  const totalRealizado = 3401; // placeholder
+  const totalMetaGeral = 3200; // placeholder
+  const percentualGeral = (totalRealizado / totalMetaGeral) * 100;
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Confetti />
-      
-      {/* Cabeçalho */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Metas</h1>
@@ -184,6 +69,7 @@ const Metas = () => {
         </div>
         
         <div className="flex gap-2">
+          {canManageGroups() && <CriarMetaDialog />}
           <Select value={periodoView} onValueChange={setPeriodoView}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Período" />
@@ -195,6 +81,33 @@ const Metas = () => {
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {/* Métricas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          title="Total de Metas"
+          value={totalMetas}
+          icon={Target}
+        />
+        
+        <MetricCard
+          title="Metas Atingidas"
+          value={metasAtingidas}
+          icon={Award}
+        />
+        
+        <MetricCard
+          title="Em Andamento"
+          value={metasAndamento}
+          icon={TrendingUp}
+        />
+        
+        <MetricCard
+          title="Progresso Geral"
+          value={`${percentualGeral.toFixed(1)}%`}
+          icon={CheckCircle2}
+        />
       </div>
 
       {/* Metas gerais da empresa */}
@@ -262,21 +175,26 @@ const Metas = () => {
                 <span className="text-sm text-muted-foreground">Progresso Total</span>
                 <span className="font-bold text-lg">{percentualGeral.toFixed(1)}%</span>
               </div>
-              {getIndicadorVisual(percentualGeral)}
+              <div className="w-full bg-muted rounded-full h-2">
+                <div 
+                  className="h-2 rounded-full transition-all duration-300 bg-primary" 
+                  style={{ width: `${Math.min(percentualGeral, 100)}%` }}
+                />
+              </div>
               <p className="text-sm text-muted-foreground mt-1">
-                {totalRealizado} / {totalMeta} peças
+                {totalRealizado} / {totalMetaGeral} peças
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-3 bg-success/10 rounded-lg">
                 <Award className="w-6 h-6 text-success mx-auto mb-1" />
-                <p className="text-lg font-bold text-success">2</p>
+                <p className="text-lg font-bold text-success">{metasAtingidas}</p>
                 <p className="text-xs text-success">Metas Atingidas</p>
               </div>
               <div className="text-center p-3 bg-warning/10 rounded-lg">
                 <TrendingUp className="w-6 h-6 text-warning mx-auto mb-1" />
-                <p className="text-lg font-bold text-warning">2</p>
+                <p className="text-lg font-bold text-warning">{metasAndamento}</p>
                 <p className="text-xs text-warning">Em Andamento</p>
               </div>
             </div>
@@ -296,55 +214,17 @@ const Metas = () => {
       </div>
 
       {/* Metas por grupo */}
-      <div className="conffec-card p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">
-          Metas por Grupo
-        </h3>
-        
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Grupo</TableHead>
-              <TableHead>Setor</TableHead>
-              <TableHead>Meta Atual</TableHead>
-              <TableHead>Realizado</TableHead>
-              <TableHead>Progresso</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Última Atualização</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {metasPorGrupo.map((meta) => (
-              <TableRow key={meta.id}>
-                <TableCell className="font-medium">{meta.grupo}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">{meta.setor}</Badge>
-                </TableCell>
-                <TableCell>{meta.metaAtual} peças</TableCell>
-                <TableCell>
-                  <span className={`font-medium ${
-                    meta.percentual >= 100 ? 'text-success' : 'text-foreground'
-                  }`}>
-                    {meta.realizado} peças
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium">{meta.percentual}%</span>
-                    </div>
-                    {getIndicadorVisual(meta.percentual)}
-                  </div>
-                </TableCell>
-                <TableCell>{getStatusBadge(meta.status, meta.percentual)}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {meta.ultimaAtualizacao}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Metas Cadastradas</CardTitle>
+          <CardDescription>
+            Visualize e gerencie todas as metas do sistema
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <MetasTable />
+        </CardContent>
+      </Card>
     </div>
   );
 };
