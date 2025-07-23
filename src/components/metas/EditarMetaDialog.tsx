@@ -56,7 +56,7 @@ export default function EditarMetaDialog({ meta, open, onOpenChange }: EditarMet
     try {
       await updateMeta.mutateAsync({
         id: meta.id,
-        grupo_id: formData.grupo_id || undefined,
+        grupo_id: formData.grupo_id || null,
         valor_meta: parseInt(formData.valor_meta),
         periodo_inicio: formData.periodo_inicio,
         periodo_fim: formData.periodo_fim,
@@ -101,12 +101,11 @@ export default function EditarMetaDialog({ meta, open, onOpenChange }: EditarMet
 
           <div className="space-y-2">
             <Label htmlFor="grupo_id">Grupo (Opcional)</Label>
-            <Select value={formData.grupo_id} onValueChange={(value) => updateFormData('grupo_id', value)}>
+            <Select value={formData.grupo_id || undefined} onValueChange={(value) => updateFormData('grupo_id', value || '')}>
               <SelectTrigger>
-                <SelectValue placeholder="Selecione um grupo ou deixe vazio para meta geral" />
+                <SelectValue placeholder="Selecione um grupo para meta específica ou deixe vazio para meta geral" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Meta Geral</SelectItem>
                 {grupos?.map((grupo) => (
                   <SelectItem key={grupo.id} value={grupo.id}>
                     {grupo.nome} - {grupo.setor}

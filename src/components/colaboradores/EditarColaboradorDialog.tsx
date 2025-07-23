@@ -73,7 +73,7 @@ export default function EditarColaboradorDialog({
         cpf: formData.cpf || undefined,
         telefone: formData.telefone || undefined,
         role: formData.role as any,
-        grupo_id: formData.grupo_id || undefined,
+        grupo_id: formData.grupo_id || null,
         data_admissao: formData.data_admissao || undefined,
         situacao: formData.situacao || undefined
       });
@@ -166,13 +166,12 @@ export default function EditarColaboradorDialog({
 
             <div className="space-y-2">
               <Label htmlFor="grupo_id">Grupo (Opcional)</Label>
-              <Select value={formData.grupo_id} onValueChange={(value) => updateFormData('grupo_id', value)}>
+              <Select value={formData.grupo_id || undefined} onValueChange={(value) => updateFormData('grupo_id', value || '')}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione um grupo" />
+                  <SelectValue placeholder="Selecione um grupo ou deixe vazio" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Nenhum grupo</SelectItem>
-                  {grupos?.map((grupo) => (
+              <SelectContent>
+                {grupos?.map((grupo) => (
                     <SelectItem key={grupo.id} value={grupo.id}>
                       {grupo.nome} - {grupo.setor}
                     </SelectItem>
