@@ -45,11 +45,11 @@ const menuItems = [
     ]
   },
   { title: "Colaboradores", url: "/colaboradores", icon: Users },
-  { title: "Custo Minuto", url: "/custo-minuto", icon: Calculator },
   { title: "Fiscal", url: "/fiscal", icon: FileText },
-  { title: "Documentos", url: "/documentos", icon: Upload },
+  { title: "Documentos ABVTEX", url: "/documentos", icon: Upload },
   { title: "Financeiro", url: "/financeiro", icon: Wallet },
   { title: "Indicadores", url: "/indicadores", icon: TrendingUp },
+  { title: "Custo Minuto", url: "/custo-minuto", icon: Calculator },
   { title: "Balanceamento IA", url: "/balanceamento-ia", icon: Bot },
 ];
 

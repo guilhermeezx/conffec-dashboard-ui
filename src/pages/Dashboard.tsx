@@ -9,7 +9,8 @@ import {
   ArrowUp,
   ArrowDown,
   Plus,
-  Download
+  Download,
+  Factory
 } from "lucide-react";
 import {
   LineChart,
@@ -62,7 +63,7 @@ const Dashboard = () => {
           value="1.247"
           change={{ value: "15,8%", trend: "up" }}
           subtitle="peças este mês"
-          icon={() => <ConffecIcon className="w-6 h-6" />}
+          icon={Factory}
         />
         
         <MetricCard
